@@ -16,6 +16,7 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed.ts",
     "seed:api": "tsx src/seed-api.ts",
+    "seed:media": "tsx src/seed-media-pages.ts",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
@@ -24,6 +25,7 @@
     "@payloadcms/db-vercel-postgres": "3.69.0",
     "@payloadcms/next": "3.69.0",
     "@payloadcms/richtext-lexical": "3.69.0",
+    "@payloadcms/storage-vercel-blob": "^3.69.0",
     "@payloadcms/ui": "3.69.0",
     "cross-env": "^7.0.3",
     "dotenv": "^17.2.3",

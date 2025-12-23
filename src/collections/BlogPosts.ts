@@ -40,6 +40,16 @@ export const BlogPosts: CollectionConfig = {
       name: 'coverImage',
       type: 'upload',
       relationTo: 'media',
+      admin: {
+        description: 'Upload an image (requires Vercel Blob storage)',
+      },
+    },
+    {
+      name: 'coverImageUrl',
+      type: 'text',
+      admin: {
+        description: 'Or use an external image URL (e.g., Unsplash)',
+      },
     },
     {
       name: 'content',
