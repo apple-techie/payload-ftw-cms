@@ -8,6 +8,8 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { BlogPosts } from './collections/BlogPosts'
 import { Services } from './collections/Services'
+import { Packages } from './collections/Packages'
+import { Addons } from './collections/Addons'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +24,7 @@ export default buildConfig({
       titleSuffix: ' | Free The Wellness CMS',
     },
   },
-  collections: [Admins, Media, Pages, BlogPosts, Services],
+  collections: [Admins, Media, Pages, BlogPosts, Services, Packages, Addons],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

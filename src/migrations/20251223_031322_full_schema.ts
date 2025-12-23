@@ -7,6 +7,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_cms_posts_category" AS ENUM('wellness', 'education', 'self-care', 'massage-therapy', 'athletic-recovery');
   CREATE TYPE "public"."enum_cms_posts_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_cms_services_category" AS ENUM('modern_massage', 'holistic_bodywork', 'athletic_recovery');
+  CREATE TYPE "public"."enum_cms_packages_type" AS ENUM('credit', 'specific');
   CREATE TABLE "admins_sessions" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
@@ -103,6 +104,42 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
+  CREATE TABLE "cms_packages" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"slug" varchar NOT NULL,
+  	"description" varchar,
+  	"type" "enum_cms_packages_type" NOT NULL,
+  	"price_in_cents" numeric NOT NULL,
+  	"credit_amount" numeric,
+  	"related_service_id" integer,
+  	"session_count" numeric,
+  	"valid_days" numeric DEFAULT 365,
+  	"is_active" boolean DEFAULT true,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "cms_addons" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"slug" varchar NOT NULL,
+  	"description" varchar,
+  	"price_in_cents" numeric NOT NULL,
+  	"additional_minutes" numeric DEFAULT 0 NOT NULL,
+  	"is_active" boolean DEFAULT true,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "cms_addons_rels" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"order" integer,
+  	"parent_id" integer NOT NULL,
+  	"path" varchar NOT NULL,
+  	"cms_services_id" integer
+  );
+  
   CREATE TABLE "payload_kv" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"key" varchar NOT NULL,
@@ -125,7 +162,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"media_id" integer,
   	"pages_id" integer,
   	"cms_posts_id" integer,
-  	"cms_services_id" integer
+  	"cms_services_id" integer,
+  	"cms_packages_id" integer,
+  	"cms_addons_id" integer
   );
   
   CREATE TABLE "payload_preferences" (
@@ -158,12 +197,17 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "cms_posts" ADD CONSTRAINT "cms_posts_cover_image_id_media_id_fk" FOREIGN KEY ("cover_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "cms_services_benefits" ADD CONSTRAINT "cms_services_benefits_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."cms_services"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "cms_services" ADD CONSTRAINT "cms_services_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "cms_packages" ADD CONSTRAINT "cms_packages_related_service_id_cms_services_id_fk" FOREIGN KEY ("related_service_id") REFERENCES "public"."cms_services"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "cms_addons_rels" ADD CONSTRAINT "cms_addons_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."cms_addons"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "cms_addons_rels" ADD CONSTRAINT "cms_addons_rels_cms_services_fk" FOREIGN KEY ("cms_services_id") REFERENCES "public"."cms_services"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_locked_documents"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_admins_fk" FOREIGN KEY ("admins_id") REFERENCES "public"."admins"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_pages_fk" FOREIGN KEY ("pages_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_cms_posts_fk" FOREIGN KEY ("cms_posts_id") REFERENCES "public"."cms_posts"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_cms_services_fk" FOREIGN KEY ("cms_services_id") REFERENCES "public"."cms_services"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_cms_packages_fk" FOREIGN KEY ("cms_packages_id") REFERENCES "public"."cms_packages"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_cms_addons_fk" FOREIGN KEY ("cms_addons_id") REFERENCES "public"."cms_addons"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_preferences"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_admins_fk" FOREIGN KEY ("admins_id") REFERENCES "public"."admins"("id") ON DELETE cascade ON UPDATE no action;
   CREATE INDEX "admins_sessions_order_idx" ON "admins_sessions" USING btree ("_order");
@@ -190,6 +234,17 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "cms_services_image_idx" ON "cms_services" USING btree ("image_id");
   CREATE INDEX "cms_services_updated_at_idx" ON "cms_services" USING btree ("updated_at");
   CREATE INDEX "cms_services_created_at_idx" ON "cms_services" USING btree ("created_at");
+  CREATE UNIQUE INDEX "cms_packages_slug_idx" ON "cms_packages" USING btree ("slug");
+  CREATE INDEX "cms_packages_related_service_idx" ON "cms_packages" USING btree ("related_service_id");
+  CREATE INDEX "cms_packages_updated_at_idx" ON "cms_packages" USING btree ("updated_at");
+  CREATE INDEX "cms_packages_created_at_idx" ON "cms_packages" USING btree ("created_at");
+  CREATE UNIQUE INDEX "cms_addons_slug_idx" ON "cms_addons" USING btree ("slug");
+  CREATE INDEX "cms_addons_updated_at_idx" ON "cms_addons" USING btree ("updated_at");
+  CREATE INDEX "cms_addons_created_at_idx" ON "cms_addons" USING btree ("created_at");
+  CREATE INDEX "cms_addons_rels_order_idx" ON "cms_addons_rels" USING btree ("order");
+  CREATE INDEX "cms_addons_rels_parent_idx" ON "cms_addons_rels" USING btree ("parent_id");
+  CREATE INDEX "cms_addons_rels_path_idx" ON "cms_addons_rels" USING btree ("path");
+  CREATE INDEX "cms_addons_rels_cms_services_id_idx" ON "cms_addons_rels" USING btree ("cms_services_id");
   CREATE UNIQUE INDEX "payload_kv_key_idx" ON "payload_kv" USING btree ("key");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX "payload_locked_documents_updated_at_idx" ON "payload_locked_documents" USING btree ("updated_at");
@@ -202,6 +257,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_pages_id_idx" ON "payload_locked_documents_rels" USING btree ("pages_id");
   CREATE INDEX "payload_locked_documents_rels_cms_posts_id_idx" ON "payload_locked_documents_rels" USING btree ("cms_posts_id");
   CREATE INDEX "payload_locked_documents_rels_cms_services_id_idx" ON "payload_locked_documents_rels" USING btree ("cms_services_id");
+  CREATE INDEX "payload_locked_documents_rels_cms_packages_id_idx" ON "payload_locked_documents_rels" USING btree ("cms_packages_id");
+  CREATE INDEX "payload_locked_documents_rels_cms_addons_id_idx" ON "payload_locked_documents_rels" USING btree ("cms_addons_id");
   CREATE INDEX "payload_preferences_key_idx" ON "payload_preferences" USING btree ("key");
   CREATE INDEX "payload_preferences_updated_at_idx" ON "payload_preferences" USING btree ("updated_at");
   CREATE INDEX "payload_preferences_created_at_idx" ON "payload_preferences" USING btree ("created_at");
@@ -223,6 +280,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "cms_posts" CASCADE;
   DROP TABLE "cms_services_benefits" CASCADE;
   DROP TABLE "cms_services" CASCADE;
+  DROP TABLE "cms_packages" CASCADE;
+  DROP TABLE "cms_addons" CASCADE;
+  DROP TABLE "cms_addons_rels" CASCADE;
   DROP TABLE "payload_kv" CASCADE;
   DROP TABLE "payload_locked_documents" CASCADE;
   DROP TABLE "payload_locked_documents_rels" CASCADE;
@@ -233,5 +293,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum_pages_status";
   DROP TYPE "public"."enum_cms_posts_category";
   DROP TYPE "public"."enum_cms_posts_status";
-  DROP TYPE "public"."enum_cms_services_category";`)
+  DROP TYPE "public"."enum_cms_services_category";
+  DROP TYPE "public"."enum_cms_packages_type";`)
 }

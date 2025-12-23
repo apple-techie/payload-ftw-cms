@@ -72,6 +72,8 @@ export interface Config {
     pages: Page;
     'cms-posts': CmsPost;
     'cms-services': CmsService;
+    'cms-packages': CmsPackage;
+    'cms-addons': CmsAddon;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +86,8 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'cms-posts': CmsPostsSelect<false> | CmsPostsSelect<true>;
     'cms-services': CmsServicesSelect<false> | CmsServicesSelect<true>;
+    'cms-packages': CmsPackagesSelect<false> | CmsPackagesSelect<true>;
+    'cms-addons': CmsAddonsSelect<false> | CmsAddonsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -289,6 +293,65 @@ export interface CmsService {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cms-packages".
+ */
+export interface CmsPackage {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  type: 'credit' | 'specific';
+  /**
+   * Price in cents (e.g., 45000 = $450)
+   */
+  priceInCents: number;
+  /**
+   * Number of credits (for credit packages)
+   */
+  creditAmount?: number | null;
+  /**
+   * Service this package is for (for specific packages)
+   */
+  relatedService?: (number | null) | CmsService;
+  /**
+   * Number of sessions (for specific packages)
+   */
+  sessionCount?: number | null;
+  /**
+   * How many days the package is valid
+   */
+  validDays?: number | null;
+  isActive?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cms-addons".
+ */
+export interface CmsAddon {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Price in cents (e.g., 2500 = $25)
+   */
+  priceInCents: number;
+  /**
+   * Extra minutes added to the session
+   */
+  additionalMinutes: number;
+  /**
+   * Services this add-on is available for
+   */
+  compatibleServices?: (number | CmsService)[] | null;
+  isActive?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -330,6 +393,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cms-services';
         value: number | CmsService;
+      } | null)
+    | ({
+        relationTo: 'cms-packages';
+        value: number | CmsPackage;
+      } | null)
+    | ({
+        relationTo: 'cms-addons';
+        value: number | CmsAddon;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -477,6 +548,39 @@ export interface CmsServicesSelect<T extends boolean = true> {
         benefit?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cms-packages_select".
+ */
+export interface CmsPackagesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  type?: T;
+  priceInCents?: T;
+  creditAmount?: T;
+  relatedService?: T;
+  sessionCount?: T;
+  validDays?: T;
+  isActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cms-addons_select".
+ */
+export interface CmsAddonsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  priceInCents?: T;
+  additionalMinutes?: T;
+  compatibleServices?: T;
+  isActive?: T;
   updatedAt?: T;
   createdAt?: T;
 }

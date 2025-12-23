@@ -1,9 +1,9 @@
-import * as migration_20251223_030705_initial_schema_v2 from './20251223_030705_initial_schema_v2';
+import * as migration_20251223_031322_full_schema from './20251223_031322_full_schema';
 
 export const migrations = [
   {
-    up: migration_20251223_030705_initial_schema_v2.up,
-    down: migration_20251223_030705_initial_schema_v2.down,
-    name: '20251223_030705_initial_schema_v2'
+    up: migration_20251223_031322_full_schema.up,
+    down: migration_20251223_031322_full_schema.down,
+    name: '20251223_031322_full_schema'
   },
 ];
