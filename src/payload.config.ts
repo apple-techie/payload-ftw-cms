@@ -2,7 +2,7 @@ import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, Plugin } from 'payload'
 import { fileURLToPath } from 'url'
 import { Admins } from './collections/Users'
 import { Media } from './collections/Media'
@@ -14,6 +14,20 @@ import { Addons } from './collections/Addons'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Only enable blob storage if token is provided
+const plugins: Plugin[] = []
+if (process.env.BLOB_READ_WRITE_TOKEN) {
+  plugins.push(
+    vercelBlobStorage({
+      enabled: true,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    })
+  )
+}
 
 export default buildConfig({
   admin: {
@@ -36,14 +50,6 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || process.env.POSTGRES_URL || '',
     },
   }),
-  plugins: [
-    vercelBlobStorage({
-      enabled: true,
-      collections: {
-        media: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
-  ],
+  plugins,
   cors: ['https://free-the-wellness.vercel.app', 'http://localhost:3000'],
 })
