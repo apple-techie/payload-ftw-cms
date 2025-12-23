@@ -35,8 +35,5 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || process.env.POSTGRES_URL || '',
     },
   }),
-  cors: [
-    'https://free-the-wellness.vercel.app',
-    'http://localhost:3000',
-  ],
+  cors: ['https://free-the-wellness.vercel.app', 'http://localhost:3000'],
 })

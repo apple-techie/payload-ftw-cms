@@ -19,7 +19,7 @@ async function login(email: string, password: string): Promise<string> {
     throw new Error(`Login failed: ${response.statusText}`)
   }
 
-  const data = await response.json() as AuthResponse
+  const data = (await response.json()) as AuthResponse
   return data.token
 }
 
@@ -28,7 +28,7 @@ async function createItem(collection: string, data: Record<string, unknown>, tok
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `JWT ${token}`,
+      Authorization: `JWT ${token}`,
     },
     body: JSON.stringify(data),
   })
@@ -64,7 +64,8 @@ async function seed() {
     {
       name: 'Swedish Massage',
       slug: 'swedish-massage',
-      description: 'A classic relaxation massage using long, flowing strokes to ease tension and promote overall well-being. Perfect for first-timers or those seeking pure relaxation.',
+      description:
+        'A classic relaxation massage using long, flowing strokes to ease tension and promote overall well-being. Perfect for first-timers or those seeking pure relaxation.',
       category: 'modern_massage',
       duration: 60,
       price: 10000,
@@ -74,7 +75,8 @@ async function seed() {
     {
       name: 'Deep Tissue Massage',
       slug: 'deep-tissue-massage',
-      description: 'Targeted pressure on deeper muscle layers to release chronic tension and knots. Ideal for those with persistent muscle pain or recovery needs.',
+      description:
+        'Targeted pressure on deeper muscle layers to release chronic tension and knots. Ideal for those with persistent muscle pain or recovery needs.',
       category: 'modern_massage',
       duration: 60,
       price: 12000,
@@ -84,7 +86,8 @@ async function seed() {
     {
       name: 'Hot Stone Massage',
       slug: 'hot-stone-massage',
-      description: 'Heated basalt stones melt away tension while promoting deep relaxation. The warmth penetrates muscles for enhanced therapeutic benefits.',
+      description:
+        'Heated basalt stones melt away tension while promoting deep relaxation. The warmth penetrates muscles for enhanced therapeutic benefits.',
       category: 'modern_massage',
       duration: 90,
       price: 15000,
@@ -94,7 +97,8 @@ async function seed() {
     {
       name: 'Craniosacral Therapy',
       slug: 'craniosacral-therapy',
-      description: 'Gentle touch to release restrictions in the craniosacral system. Helps with headaches, TMJ, stress, and nervous system regulation.',
+      description:
+        'Gentle touch to release restrictions in the craniosacral system. Helps with headaches, TMJ, stress, and nervous system regulation.',
       category: 'holistic_bodywork',
       duration: 60,
       price: 13000,
@@ -104,7 +108,8 @@ async function seed() {
     {
       name: 'Myofascial Release',
       slug: 'myofascial-release',
-      description: 'Sustained pressure to release fascial restrictions and restore mobility. Effective for chronic pain, postural issues, and movement limitations.',
+      description:
+        'Sustained pressure to release fascial restrictions and restore mobility. Effective for chronic pain, postural issues, and movement limitations.',
       category: 'holistic_bodywork',
       duration: 75,
       price: 14000,
@@ -114,7 +119,8 @@ async function seed() {
     {
       name: 'Lymphatic Drainage',
       slug: 'lymphatic-drainage',
-      description: 'Light, rhythmic strokes to stimulate lymph flow and reduce swelling. Supports immune function and post-surgical recovery.',
+      description:
+        'Light, rhythmic strokes to stimulate lymph flow and reduce swelling. Supports immune function and post-surgical recovery.',
       category: 'holistic_bodywork',
       duration: 60,
       price: 12000,
@@ -124,7 +130,8 @@ async function seed() {
     {
       name: 'Sports Massage',
       slug: 'sports-massage',
-      description: 'Performance-focused massage for athletes. Enhances recovery, prevents injury, and improves flexibility and range of motion.',
+      description:
+        'Performance-focused massage for athletes. Enhances recovery, prevents injury, and improves flexibility and range of motion.',
       category: 'athletic_recovery',
       duration: 60,
       price: 12000,
@@ -134,7 +141,8 @@ async function seed() {
     {
       name: 'Percussion Therapy',
       slug: 'percussion-therapy',
-      description: 'Targeted percussion device treatment for rapid muscle recovery. Breaks up lactic acid and increases blood flow to treated areas.',
+      description:
+        'Targeted percussion device treatment for rapid muscle recovery. Breaks up lactic acid and increases blood flow to treated areas.',
       category: 'athletic_recovery',
       duration: 30,
       price: 6000,
@@ -144,7 +152,8 @@ async function seed() {
     {
       name: 'Stretch Therapy',
       slug: 'stretch-therapy',
-      description: 'Assisted stretching session to improve flexibility and range of motion. Great for desk workers and athletes alike.',
+      description:
+        'Assisted stretching session to improve flexibility and range of motion. Great for desk workers and athletes alike.',
       category: 'athletic_recovery',
       duration: 45,
       price: 8000,
@@ -180,7 +189,8 @@ async function seed() {
     {
       name: 'Recovery 10-Pack',
       slug: 'recovery-10-pack',
-      description: 'Ten credits for the dedicated wellness enthusiast. Maximum flexibility, maximum savings. Save $150!',
+      description:
+        'Ten credits for the dedicated wellness enthusiast. Maximum flexibility, maximum savings. Save $150!',
       type: 'credit',
       priceInCents: 85000,
       creditAmount: 10,
@@ -190,7 +200,8 @@ async function seed() {
     {
       name: 'Deep Tissue 3-Pack',
       slug: 'deep-tissue-3-pack',
-      description: 'Three 60-minute Deep Tissue sessions. Ideal for ongoing muscle maintenance. Save $30!',
+      description:
+        'Three 60-minute Deep Tissue sessions. Ideal for ongoing muscle maintenance. Save $30!',
       type: 'specific',
       priceInCents: 33000,
       relatedService: insertedServices['deep-tissue-massage'],
@@ -236,7 +247,8 @@ async function seed() {
     {
       name: 'Cupping Therapy',
       slug: 'cupping-therapy',
-      description: 'Silicone cups create suction to release muscle tension and increase circulation.',
+      description:
+        'Silicone cups create suction to release muscle tension and increase circulation.',
       priceInCents: 2000,
       additionalMinutes: 15,
       compatibleServices: allServiceIds,
@@ -245,7 +257,8 @@ async function seed() {
     {
       name: 'Aromatherapy',
       slug: 'aromatherapy',
-      description: 'Premium essential oils customized to your needs - relaxation, energizing, or therapeutic.',
+      description:
+        'Premium essential oils customized to your needs - relaxation, energizing, or therapeutic.',
       priceInCents: 1500,
       additionalMinutes: 0,
       compatibleServices: allServiceIds,
@@ -286,14 +299,20 @@ async function seed() {
     {
       title: '5 Benefits of Regular Massage Therapy',
       slug: '5-benefits-regular-massage-therapy',
-      excerpt: 'Discover how incorporating regular massage therapy into your wellness routine can transform your physical and mental health.',
+      excerpt:
+        'Discover how incorporating regular massage therapy into your wellness routine can transform your physical and mental health.',
       content: {
         root: {
           type: 'root',
           children: [
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'Regular massage therapy is more than just a luxury—it\'s a powerful tool for maintaining your overall health and well-being. Here are five key benefits you can expect from making massage a regular part of your self-care routine.' }],
+              children: [
+                {
+                  type: 'text',
+                  text: "Regular massage therapy is more than just a luxury—it's a powerful tool for maintaining your overall health and well-being. Here are five key benefits you can expect from making massage a regular part of your self-care routine.",
+                },
+              ],
             },
             {
               type: 'heading',
@@ -302,7 +321,12 @@ async function seed() {
             },
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'One of the most immediate benefits of massage therapy is relief from muscle tension and pain. Whether you\'re dealing with chronic back pain, tension headaches, or sports-related soreness, targeted massage techniques can help release tight muscles and improve blood flow to affected areas.' }],
+              children: [
+                {
+                  type: 'text',
+                  text: "One of the most immediate benefits of massage therapy is relief from muscle tension and pain. Whether you're dealing with chronic back pain, tension headaches, or sports-related soreness, targeted massage techniques can help release tight muscles and improve blood flow to affected areas.",
+                },
+              ],
             },
             {
               type: 'heading',
@@ -311,7 +335,12 @@ async function seed() {
             },
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'Massage therapy triggers the release of endorphins—your body\'s natural "feel-good" chemicals. It also reduces cortisol levels, the hormone associated with stress. Regular sessions can help you maintain a calmer, more balanced mental state.' }],
+              children: [
+                {
+                  type: 'text',
+                  text: 'Massage therapy triggers the release of endorphins—your body\'s natural "feel-good" chemicals. It also reduces cortisol levels, the hormone associated with stress. Regular sessions can help you maintain a calmer, more balanced mental state.',
+                },
+              ],
             },
           ],
           direction: 'ltr',
@@ -329,14 +358,20 @@ async function seed() {
     {
       title: 'Understanding Different Massage Techniques',
       slug: 'understanding-massage-techniques',
-      excerpt: 'From Swedish to Deep Tissue, learn which massage technique is right for your needs.',
+      excerpt:
+        'From Swedish to Deep Tissue, learn which massage technique is right for your needs.',
       content: {
         root: {
           type: 'root',
           children: [
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'Choosing the right massage technique can make all the difference in your experience and results. Here\'s a guide to help you understand the most popular options.' }],
+              children: [
+                {
+                  type: 'text',
+                  text: "Choosing the right massage technique can make all the difference in your experience and results. Here's a guide to help you understand the most popular options.",
+                },
+              ],
             },
             {
               type: 'heading',
@@ -345,7 +380,12 @@ async function seed() {
             },
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'The most common type of massage, Swedish massage uses long, flowing strokes to promote relaxation and improve circulation. Perfect for first-time massage clients and general relaxation.' }],
+              children: [
+                {
+                  type: 'text',
+                  text: 'The most common type of massage, Swedish massage uses long, flowing strokes to promote relaxation and improve circulation. Perfect for first-time massage clients and general relaxation.',
+                },
+              ],
             },
           ],
           direction: 'ltr',
