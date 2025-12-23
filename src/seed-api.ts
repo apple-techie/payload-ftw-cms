@@ -1,19 +1,66 @@
-import { config as dotenvConfig } from 'dotenv'
-dotenvConfig({ path: '.env.local' })
+// Seed script using the Payload REST API
+// Run this after the CMS is deployed and you have an admin account
 
-import { getPayload } from 'payload'
+const CMS_URL = process.env.PAYLOAD_CMS_URL || 'https://payload-ftw-cms.vercel.app'
+
+interface AuthResponse {
+  token: string
+  user: { id: number; email: string }
+}
+
+async function login(email: string, password: string): Promise<string> {
+  const response = await fetch(`${CMS_URL}/api/admins/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Login failed: ${response.statusText}`)
+  }
+
+  const data = await response.json() as AuthResponse
+  return data.token
+}
+
+async function createItem(collection: string, data: Record<string, unknown>, token: string) {
+  const response = await fetch(`${CMS_URL}/api/${collection}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `JWT ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Failed to create ${collection}: ${error}`)
+  }
+
+  return response.json()
+}
 
 async function seed() {
-  console.log('🌱 Seeding Payload CMS...')
+  const email = process.env.ADMIN_EMAIL
+  const password = process.env.ADMIN_PASSWORD
 
-  // Dynamic import to ensure env vars are loaded first
-  const { default: config } = await import('./payload.config')
-  const payload = await getPayload({ config })
+  if (!email || !password) {
+    console.error('Please set ADMIN_EMAIL and ADMIN_PASSWORD environment variables')
+    process.exit(1)
+  }
+
+  console.log('🌱 Seeding Payload CMS via API...')
+  console.log(`Using CMS at: ${CMS_URL}`)
+
+  // Login
+  console.log('Logging in...')
+  const token = await login(email, password)
+  console.log('✓ Logged in')
 
   // Seed Services
   console.log('Seeding services...')
   const servicesData = [
-    // Modern Massage
     {
       name: 'Swedish Massage',
       slug: 'swedish-massage',
@@ -44,7 +91,6 @@ async function seed() {
       creditValue: 2,
       isActive: true,
     },
-    // Holistic Bodywork
     {
       name: 'Craniosacral Therapy',
       slug: 'craniosacral-therapy',
@@ -75,7 +121,6 @@ async function seed() {
       creditValue: 1,
       isActive: true,
     },
-    // Athletic Recovery
     {
       name: 'Sports Massage',
       slug: 'sports-massage',
@@ -110,23 +155,23 @@ async function seed() {
 
   const insertedServices: Record<string, number> = {}
   for (const service of servicesData) {
-    const result = await payload.create({
-      collection: 'cms-services',
-      data: service,
-    })
-    insertedServices[service.slug] = result.id
-    console.log(`  Created service: ${service.name}`)
+    try {
+      const result = await createItem('cms-services', service, token)
+      insertedServices[service.slug] = result.doc.id
+      console.log(`  ✓ Created service: ${service.name}`)
+    } catch (e) {
+      console.log(`  ⚠ Skipped service: ${service.name} (may already exist)`)
+    }
   }
 
   // Seed Packages
   console.log('Seeding packages...')
   const packagesData = [
-    // Credit packages
     {
       name: 'Wellness 5-Pack',
       slug: 'wellness-5-pack',
       description: 'Five credits to use on any service. Perfect for regular self-care. Save $50!',
-      type: 'credit' as const,
+      type: 'credit',
       priceInCents: 45000,
       creditAmount: 5,
       validDays: 365,
@@ -136,18 +181,17 @@ async function seed() {
       name: 'Recovery 10-Pack',
       slug: 'recovery-10-pack',
       description: 'Ten credits for the dedicated wellness enthusiast. Maximum flexibility, maximum savings. Save $150!',
-      type: 'credit' as const,
+      type: 'credit',
       priceInCents: 85000,
       creditAmount: 10,
       validDays: 365,
       isActive: true,
     },
-    // Specific packages
     {
       name: 'Deep Tissue 3-Pack',
       slug: 'deep-tissue-3-pack',
       description: 'Three 60-minute Deep Tissue sessions. Ideal for ongoing muscle maintenance. Save $30!',
-      type: 'specific' as const,
+      type: 'specific',
       priceInCents: 33000,
       relatedService: insertedServices['deep-tissue-massage'],
       sessionCount: 3,
@@ -158,7 +202,7 @@ async function seed() {
       name: 'Monthly Wellness',
       slug: 'monthly-wellness',
       description: 'Two 60-minute Swedish Massage sessions. Your monthly reset routine. Save $20!',
-      type: 'specific' as const,
+      type: 'specific',
       priceInCents: 18000,
       relatedService: insertedServices['swedish-massage'],
       sessionCount: 2,
@@ -168,11 +212,12 @@ async function seed() {
   ]
 
   for (const pkg of packagesData) {
-    await payload.create({
-      collection: 'cms-packages',
-      data: pkg,
-    })
-    console.log(`  Created package: ${pkg.name}`)
+    try {
+      await createItem('cms-packages', pkg, token)
+      console.log(`  ✓ Created package: ${pkg.name}`)
+    } catch (e) {
+      console.log(`  ⚠ Skipped package: ${pkg.name} (may already exist)`)
+    }
   }
 
   // Seed Add-ons
@@ -227,11 +272,12 @@ async function seed() {
   ]
 
   for (const addon of addonsData) {
-    await payload.create({
-      collection: 'cms-addons',
-      data: addon,
-    })
-    console.log(`  Created add-on: ${addon.name}`)
+    try {
+      await createItem('cms-addons', addon, token)
+      console.log(`  ✓ Created add-on: ${addon.name}`)
+    } catch (e) {
+      console.log(`  ⚠ Skipped add-on: ${addon.name} (may already exist)`)
+    }
   }
 
   // Seed Blog Posts
@@ -267,33 +313,6 @@ async function seed() {
               type: 'paragraph',
               children: [{ type: 'text', text: 'Massage therapy triggers the release of endorphins—your body\'s natural "feel-good" chemicals. It also reduces cortisol levels, the hormone associated with stress. Regular sessions can help you maintain a calmer, more balanced mental state.' }],
             },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: '3. Improved Sleep Quality' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Many clients report better sleep after massage therapy. The relaxation response triggered during a session can help regulate your sleep patterns and improve the quality of your rest.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: '4. Enhanced Immune Function' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Studies have shown that massage therapy can boost your immune system by increasing the activity of white blood cells. This means regular massages may help you stay healthier and recover faster from illness.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: '5. Better Posture and Flexibility' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Regular massage can help correct postural imbalances caused by sitting at a desk, driving, or repetitive movements. By releasing tight muscles and improving range of motion, massage therapy supports better overall body mechanics.' }],
-            },
           ],
           direction: 'ltr',
           format: '',
@@ -305,7 +324,7 @@ async function seed() {
       author: 'Free The Wellness',
       status: 'published',
       publishedAt: '2024-12-01T00:00:00.000Z',
-      tags: [{ tag: 'massage' }, { tag: 'wellness' }, { tag: 'health' }, { tag: 'self-care' }],
+      tags: [{ tag: 'massage' }, { tag: 'wellness' }, { tag: 'health' }],
     },
     {
       title: 'Understanding Different Massage Techniques',
@@ -326,34 +345,7 @@ async function seed() {
             },
             {
               type: 'paragraph',
-              children: [{ type: 'text', text: 'The most common type of massage, Swedish massage uses long, flowing strokes to promote relaxation and improve circulation. Perfect for first-time massage clients, general relaxation, and improving circulation.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Deep Tissue Massage' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'This technique uses slower, more forceful strokes to target deeper layers of muscle and connective tissue. Best for chronic muscle tension, recovery from injuries, and persistent pain relief.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Hot Stone Massage' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Heated basalt stones are placed on key points of the body and used during the massage. Benefits include deep muscle relaxation, improved blood flow, and enhanced stress relief.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Sports Massage' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Designed for athletes and active individuals, sports massage focuses on preventing and treating injuries. Ideal for pre and post-workout recovery, injury prevention, and performance enhancement.' }],
+              children: [{ type: 'text', text: 'The most common type of massage, Swedish massage uses long, flowing strokes to promote relaxation and improve circulation. Perfect for first-time massage clients and general relaxation.' }],
             },
           ],
           direction: 'ltr',
@@ -368,79 +360,18 @@ async function seed() {
       publishedAt: '2024-11-15T00:00:00.000Z',
       tags: [{ tag: 'massage techniques' }, { tag: 'education' }],
     },
-    {
-      title: 'Self-Care Tips Between Massage Sessions',
-      slug: 'self-care-tips-between-sessions',
-      excerpt: 'Maximize the benefits of your massage therapy with these simple at-home self-care practices.',
-      content: {
-        root: {
-          type: 'root',
-          children: [
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'While regular professional massage is essential, what you do between sessions matters too. Here are practical ways to maintain your wellness and extend the benefits of your treatments.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Stay Hydrated' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Drinking plenty of water after a massage helps flush out toxins released during treatment. Aim for at least 8 glasses of water daily, and even more on treatment days.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Stretch Daily' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Gentle stretching helps maintain the flexibility gained during massage. Focus on areas that tend to get tight, like your neck, shoulders, and lower back.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Practice Good Posture' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Be mindful of your posture throughout the day, especially if you work at a desk. Regular posture checks can prevent the tension that builds up between sessions.' }],
-            },
-            {
-              type: 'heading',
-              tag: 'h2',
-              children: [{ type: 'text', text: 'Get Enough Sleep' }],
-            },
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Quality sleep is when your body does its deepest healing. Aim for 7-9 hours per night and establish a consistent sleep schedule.' }],
-            },
-          ],
-          direction: 'ltr',
-          format: '',
-          indent: 0,
-          version: 1,
-        },
-      },
-      category: 'self-care',
-      author: 'Free The Wellness',
-      status: 'published',
-      publishedAt: '2024-11-01T00:00:00.000Z',
-      tags: [{ tag: 'self-care' }, { tag: 'tips' }],
-    },
   ]
 
   for (const post of blogPostsData) {
-    await payload.create({
-      collection: 'cms-posts',
-      data: post,
-    })
-    console.log(`  Created blog post: ${post.title}`)
+    try {
+      await createItem('cms-posts', post, token)
+      console.log(`  ✓ Created blog post: ${post.title}`)
+    } catch (e) {
+      console.log(`  ⚠ Skipped blog post: ${post.title} (may already exist)`)
+    }
   }
 
   console.log('✅ Seeding complete!')
-  process.exit(0)
 }
 
 seed().catch((e) => {
