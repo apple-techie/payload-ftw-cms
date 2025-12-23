@@ -226,6 +226,34 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     );
   `)
 
+  // Add missing columns to existing tables (for incremental updates)
+  // This handles cases where tables exist from previous deployments but lack new columns
+  await db.execute(sql`
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "cms_posts_id" integer;
+    EXCEPTION
+      WHEN duplicate_column THEN null;
+    END $$;
+
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "cms_services_id" integer;
+    EXCEPTION
+      WHEN duplicate_column THEN null;
+    END $$;
+
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "cms_packages_id" integer;
+    EXCEPTION
+      WHEN duplicate_column THEN null;
+    END $$;
+
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "cms_addons_id" integer;
+    EXCEPTION
+      WHEN duplicate_column THEN null;
+    END $$;
+  `)
+
   // Add foreign keys (ignore if they exist)
   await db.execute(sql`
     DO $$ BEGIN
