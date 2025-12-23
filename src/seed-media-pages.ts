@@ -1,6 +1,8 @@
 // Seed script for uploading blog images and creating pages
 // Run: npx tsx src/seed-media-pages.ts
 
+export {} // Make this a module to avoid variable conflicts
+
 const CMS_URL = process.env.PAYLOAD_CMS_URL || 'https://payload-ftw-cms.vercel.app'
 
 interface AuthResponse {

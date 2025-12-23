@@ -1,6 +1,8 @@
 // Seed script using the Payload REST API
 // Run this after the CMS is deployed and you have an admin account
 
+export {} // Make this a module to avoid variable conflicts
+
 const CMS_URL = process.env.PAYLOAD_CMS_URL || 'https://payload-ftw-cms.vercel.app'
 
 interface AuthResponse {
