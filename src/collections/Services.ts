@@ -1,10 +1,15 @@
 import type { CollectionConfig } from 'payload'
 
 export const Services: CollectionConfig = {
-  slug: 'services',
+  slug: 'cms-services',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'price', 'duration'],
+    group: 'Content',
+  },
+  labels: {
+    singular: 'Service',
+    plural: 'Services',
   },
   access: {
     read: () => true,

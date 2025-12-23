@@ -511,8 +511,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.blog_posts_tags": {
-      "name": "blog_posts_tags",
+    "public.cms_posts_tags": {
+      "name": "cms_posts_tags",
       "schema": "",
       "columns": {
         "_order": {
@@ -541,8 +541,8 @@
         }
       },
       "indexes": {
-        "blog_posts_tags_order_idx": {
-          "name": "blog_posts_tags_order_idx",
+        "cms_posts_tags_order_idx": {
+          "name": "cms_posts_tags_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -556,8 +556,8 @@
           "method": "btree",
           "with": {}
         },
-        "blog_posts_tags_parent_id_idx": {
-          "name": "blog_posts_tags_parent_id_idx",
+        "cms_posts_tags_parent_id_idx": {
+          "name": "cms_posts_tags_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -573,10 +573,10 @@
         }
       },
       "foreignKeys": {
-        "blog_posts_tags_parent_id_fk": {
-          "name": "blog_posts_tags_parent_id_fk",
-          "tableFrom": "blog_posts_tags",
-          "tableTo": "blog_posts",
+        "cms_posts_tags_parent_id_fk": {
+          "name": "cms_posts_tags_parent_id_fk",
+          "tableFrom": "cms_posts_tags",
+          "tableTo": "cms_posts",
           "columnsFrom": [
             "_parent_id"
           ],
@@ -593,8 +593,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.blog_posts": {
-      "name": "blog_posts",
+    "public.cms_posts": {
+      "name": "cms_posts",
       "schema": "",
       "columns": {
         "id": {
@@ -635,7 +635,7 @@
         },
         "category": {
           "name": "category",
-          "type": "enum_blog_posts_category",
+          "type": "enum_cms_posts_category",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -649,7 +649,7 @@
         },
         "status": {
           "name": "status",
-          "type": "enum_blog_posts_status",
+          "type": "enum_cms_posts_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
@@ -677,8 +677,8 @@
         }
       },
       "indexes": {
-        "blog_posts_slug_idx": {
-          "name": "blog_posts_slug_idx",
+        "cms_posts_slug_idx": {
+          "name": "cms_posts_slug_idx",
           "columns": [
             {
               "expression": "slug",
@@ -692,8 +692,8 @@
           "method": "btree",
           "with": {}
         },
-        "blog_posts_cover_image_idx": {
-          "name": "blog_posts_cover_image_idx",
+        "cms_posts_cover_image_idx": {
+          "name": "cms_posts_cover_image_idx",
           "columns": [
             {
               "expression": "cover_image_id",
@@ -707,8 +707,8 @@
           "method": "btree",
           "with": {}
         },
-        "blog_posts_updated_at_idx": {
-          "name": "blog_posts_updated_at_idx",
+        "cms_posts_updated_at_idx": {
+          "name": "cms_posts_updated_at_idx",
           "columns": [
             {
               "expression": "updated_at",
@@ -722,8 +722,8 @@
           "method": "btree",
           "with": {}
         },
-        "blog_posts_created_at_idx": {
-          "name": "blog_posts_created_at_idx",
+        "cms_posts_created_at_idx": {
+          "name": "cms_posts_created_at_idx",
           "columns": [
             {
               "expression": "created_at",
@@ -739,9 +739,9 @@
         }
       },
       "foreignKeys": {
-        "blog_posts_cover_image_id_media_id_fk": {
-          "name": "blog_posts_cover_image_id_media_id_fk",
-          "tableFrom": "blog_posts",
+        "cms_posts_cover_image_id_media_id_fk": {
+          "name": "cms_posts_cover_image_id_media_id_fk",
+          "tableFrom": "cms_posts",
           "tableTo": "media",
           "columnsFrom": [
             "cover_image_id"
@@ -759,8 +759,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.services_benefits": {
-      "name": "services_benefits",
+    "public.cms_services_benefits": {
+      "name": "cms_services_benefits",
       "schema": "",
       "columns": {
         "_order": {
@@ -789,8 +789,8 @@
         }
       },
       "indexes": {
-        "services_benefits_order_idx": {
-          "name": "services_benefits_order_idx",
+        "cms_services_benefits_order_idx": {
+          "name": "cms_services_benefits_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -804,8 +804,8 @@
           "method": "btree",
           "with": {}
         },
-        "services_benefits_parent_id_idx": {
-          "name": "services_benefits_parent_id_idx",
+        "cms_services_benefits_parent_id_idx": {
+          "name": "cms_services_benefits_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -821,10 +821,10 @@
         }
       },
       "foreignKeys": {
-        "services_benefits_parent_id_fk": {
-          "name": "services_benefits_parent_id_fk",
-          "tableFrom": "services_benefits",
-          "tableTo": "services",
+        "cms_services_benefits_parent_id_fk": {
+          "name": "cms_services_benefits_parent_id_fk",
+          "tableFrom": "cms_services_benefits",
+          "tableTo": "cms_services",
           "columnsFrom": [
             "_parent_id"
           ],
@@ -841,8 +841,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.services": {
-      "name": "services",
+    "public.cms_services": {
+      "name": "cms_services",
       "schema": "",
       "columns": {
         "id": {
@@ -883,7 +883,7 @@
         },
         "category": {
           "name": "category",
-          "type": "enum_services_category",
+          "type": "enum_cms_services_category",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -930,8 +930,8 @@
         }
       },
       "indexes": {
-        "services_slug_idx": {
-          "name": "services_slug_idx",
+        "cms_services_slug_idx": {
+          "name": "cms_services_slug_idx",
           "columns": [
             {
               "expression": "slug",
@@ -945,8 +945,8 @@
           "method": "btree",
           "with": {}
         },
-        "services_image_idx": {
-          "name": "services_image_idx",
+        "cms_services_image_idx": {
+          "name": "cms_services_image_idx",
           "columns": [
             {
               "expression": "image_id",
@@ -960,8 +960,8 @@
           "method": "btree",
           "with": {}
         },
-        "services_updated_at_idx": {
-          "name": "services_updated_at_idx",
+        "cms_services_updated_at_idx": {
+          "name": "cms_services_updated_at_idx",
           "columns": [
             {
               "expression": "updated_at",
@@ -975,8 +975,8 @@
           "method": "btree",
           "with": {}
         },
-        "services_created_at_idx": {
-          "name": "services_created_at_idx",
+        "cms_services_created_at_idx": {
+          "name": "cms_services_created_at_idx",
           "columns": [
             {
               "expression": "created_at",
@@ -992,9 +992,9 @@
         }
       },
       "foreignKeys": {
-        "services_image_id_media_id_fk": {
-          "name": "services_image_id_media_id_fk",
-          "tableFrom": "services",
+        "cms_services_image_id_media_id_fk": {
+          "name": "cms_services_image_id_media_id_fk",
+          "tableFrom": "cms_services",
           "tableTo": "media",
           "columnsFrom": [
             "image_id"
@@ -1190,14 +1190,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "blog_posts_id": {
-          "name": "blog_posts_id",
+        "cms_posts_id": {
+          "name": "cms_posts_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "services_id": {
-          "name": "services_id",
+        "cms_services_id": {
+          "name": "cms_services_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1294,11 +1294,11 @@
           "method": "btree",
           "with": {}
         },
-        "payload_locked_documents_rels_blog_posts_id_idx": {
-          "name": "payload_locked_documents_rels_blog_posts_id_idx",
+        "payload_locked_documents_rels_cms_posts_id_idx": {
+          "name": "payload_locked_documents_rels_cms_posts_id_idx",
           "columns": [
             {
-              "expression": "blog_posts_id",
+              "expression": "cms_posts_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1309,11 +1309,11 @@
           "method": "btree",
           "with": {}
         },
-        "payload_locked_documents_rels_services_id_idx": {
-          "name": "payload_locked_documents_rels_services_id_idx",
+        "payload_locked_documents_rels_cms_services_id_idx": {
+          "name": "payload_locked_documents_rels_cms_services_id_idx",
           "columns": [
             {
-              "expression": "services_id",
+              "expression": "cms_services_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1378,12 +1378,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "payload_locked_documents_rels_blog_posts_fk": {
-          "name": "payload_locked_documents_rels_blog_posts_fk",
+        "payload_locked_documents_rels_cms_posts_fk": {
+          "name": "payload_locked_documents_rels_cms_posts_fk",
           "tableFrom": "payload_locked_documents_rels",
-          "tableTo": "blog_posts",
+          "tableTo": "cms_posts",
           "columnsFrom": [
-            "blog_posts_id"
+            "cms_posts_id"
           ],
           "columnsTo": [
             "id"
@@ -1391,12 +1391,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "payload_locked_documents_rels_services_fk": {
-          "name": "payload_locked_documents_rels_services_fk",
+        "payload_locked_documents_rels_cms_services_fk": {
+          "name": "payload_locked_documents_rels_cms_services_fk",
           "tableFrom": "payload_locked_documents_rels",
-          "tableTo": "services",
+          "tableTo": "cms_services",
           "columnsFrom": [
-            "services_id"
+            "cms_services_id"
           ],
           "columnsTo": [
             "id"
@@ -1727,8 +1727,8 @@
         "published"
       ]
     },
-    "public.enum_blog_posts_category": {
-      "name": "enum_blog_posts_category",
+    "public.enum_cms_posts_category": {
+      "name": "enum_cms_posts_category",
       "schema": "public",
       "values": [
         "wellness",
@@ -1738,16 +1738,16 @@
         "athletic-recovery"
       ]
     },
-    "public.enum_blog_posts_status": {
-      "name": "enum_blog_posts_status",
+    "public.enum_cms_posts_status": {
+      "name": "enum_cms_posts_status",
       "schema": "public",
       "values": [
         "draft",
         "published"
       ]
     },
-    "public.enum_services_category": {
-      "name": "enum_services_category",
+    "public.enum_cms_services_category": {
+      "name": "enum_cms_services_category",
       "schema": "public",
       "values": [
         "modern_massage",
@@ -1766,6 +1766,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "f541b556-b489-4078-864c-c6a98c0c39ef",
+  "id": "3ab52625-4f50-4cbf-ae9c-874910086944",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

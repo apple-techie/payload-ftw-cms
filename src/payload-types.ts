@@ -70,8 +70,8 @@ export interface Config {
     admins: Admin;
     media: Media;
     pages: Page;
-    'blog-posts': BlogPost;
-    services: Service;
+    'cms-posts': CmsPost;
+    'cms-services': CmsService;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,8 +82,8 @@ export interface Config {
     admins: AdminsSelect<false> | AdminsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
-    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    services: ServicesSelect<false> | ServicesSelect<true>;
+    'cms-posts': CmsPostsSelect<false> | CmsPostsSelect<true>;
+    'cms-services': CmsServicesSelect<false> | CmsServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -200,9 +200,9 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
+ * via the `definition` "cms-posts".
  */
-export interface BlogPost {
+export interface CmsPost {
   id: number;
   title: string;
   slug: string;
@@ -241,9 +241,9 @@ export interface BlogPost {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
+ * via the `definition` "cms-services".
  */
-export interface Service {
+export interface CmsService {
   id: number;
   name: string;
   slug: string;
@@ -324,12 +324,12 @@ export interface PayloadLockedDocument {
         value: number | Page;
       } | null)
     | ({
-        relationTo: 'blog-posts';
-        value: number | BlogPost;
+        relationTo: 'cms-posts';
+        value: number | CmsPost;
       } | null)
     | ({
-        relationTo: 'services';
-        value: number | Service;
+        relationTo: 'cms-services';
+        value: number | CmsService;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -435,9 +435,9 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts_select".
+ * via the `definition` "cms-posts_select".
  */
-export interface BlogPostsSelect<T extends boolean = true> {
+export interface CmsPostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   excerpt?: T;
@@ -458,9 +458,9 @@ export interface BlogPostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services_select".
+ * via the `definition` "cms-services_select".
  */
-export interface ServicesSelect<T extends boolean = true> {
+export interface CmsServicesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
